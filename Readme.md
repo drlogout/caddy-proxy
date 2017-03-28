@@ -100,5 +100,5 @@ $ cd ../app1
 $ docker-compose up -d
 ```
 
-Please note, that this `caddy` configuration uses the [Letsencrypt staging environment](https://letsencrypt.org/docs/staging-environment/). For use in production remove the `-ca=https://acme-staging.api.letsencrypt.org/directory` flag in `caddy/docker-compose.yaml`.
+Please note, that this `caddy` configuration uses the [Letsencrypt staging environment](https://letsencrypt.org/docs/staging-environment/). This means your browser will warn you about an insecure connection. For use in production remove the `-ca=https://acme-staging.api.letsencrypt.org/directory` flag in `caddy/docker-compose.yaml`.
 
