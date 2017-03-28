@@ -49,7 +49,7 @@ services:
 
   caddy-gen:
     container_name: caddy-gen
-    image: drlogout/docker-gen-dind
+    image: drlogout/docker-gen-dind:0.7.3
     volumes:
       - "/var/run/docker.sock:/tmp/docker.sock:ro"
       - "../volumes/templates:/etc/docker-gen/templates:ro"
