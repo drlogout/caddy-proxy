@@ -1,0 +1,37 @@
+version: "2"
+
+networks:
+  proxy-tier:
+    external:
+      name: caddy-proxy
+
+services:
+  caddy:
+    container_name: caddy
+    image: abiosoft/caddy
+    # remove -ca=https://acme-staging.api.letsencrypt.org/directory in production
+    command: --conf /etc/caddy/config/Caddyfile --log stdout -ca=https://acme-staging.api.letsencrypt.org/directory
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - "../volumes/config:/etc/caddy/config"
+      - "../volumes/certs:/etc/caddy/certs"
+    environment:
+      - CADDYPATH=/etc/caddy/certs
+    networks:
+      - proxy-tier
+    restart: always
+
+  caddy-gen:
+    container_name: caddy-gen
+    image: drlogout/docker-gen-dind
+    volumes:
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+      - "../volumes/templates:/etc/docker-gen/templates:ro"
+    volumes_from:
+      - caddy
+    environment:
+      LETSENCRYPT_EMAIL: "email@example.com"
+    command: -notify "docker restart caddy" -watch -wait 5s:30s /etc/docker-gen/templates/caddy.tmpl /etc/caddy/config/Caddyfile
+    restart: always
