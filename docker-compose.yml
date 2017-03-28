@@ -15,6 +15,7 @@ services:
       VIRTUAL_HOST: "app1.example.com"
       VIRTUAL_NETWORK: "caddy-proxy"
       VIRTUAL_PORT: 80
+    restart: always
 
   app2:
     container_name: apache
@@ -25,19 +26,20 @@ services:
       VIRTUAL_HOST: "app2.exmaple.com"
       VIRTUAL_NETWORK: "caddy-proxy"
       VIRTUAL_PORT: 80
+    restart: always
 
   caddy-gen:
     container_name: caddy-gen
-    image: drlogout/docker-gen
+    image: drlogout/docker-gen-dind
     volumes:
       - "/var/run/docker.sock:/tmp/docker.sock:ro"
       - "./volumes/templates:/etc/docker-gen/templates:ro"
     volumes_from:
       - caddy
-    restart: always
     environment:
       LETSENCRYPT_EMAIL: email@example.com
-    entrypoint: /usr/local/bin/docker-gen -notify "docker restart caddy" -watch -wait 5s:30s /etc/docker-gen/templates/caddy.tmpl /etc/caddy/config/Caddyfile
+    command: -notify "docker restart caddy" -watch -wait 5s:30s /etc/docker-gen/templates/caddy.tmpl /etc/caddy/config/Caddyfile
+    restart: always
 
   caddy:
     container_name: caddy
@@ -46,7 +48,6 @@ services:
     ports:
       - 80:80
       - 443:443
-    restart: always
     volumes:
       - "./volumes/config:/etc/caddy/config"
       - "./volumes/certs:/etc/caddy/certs"
@@ -54,3 +55,4 @@ services:
       - CADDYPATH=/etc/caddy/certs
     networks:
       - proxy-tier
+    restart: always
