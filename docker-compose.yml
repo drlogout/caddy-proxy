@@ -37,7 +37,7 @@ services:
     volumes_from:
       - caddy
     environment:
-      LETSENCRYPT_EMAIL: email@example.com
+      LETSENCRYPT_EMAIL: "email@example.com"
     command: -notify "docker restart caddy" -watch -wait 5s:30s /etc/docker-gen/templates/caddy.tmpl /etc/caddy/config/Caddyfile
     restart: always
 
