@@ -1,0 +1,15 @@
+{{ range $host, $containers := groupByMulti $ "Env.VIRTUAL_HOST" "," }}
+
+{{ $host }} {
+  tls {{ $.Env.LETSENCRYPT_EMAIL }}
+
+  proxy /{{ range $index, $container := $containers }}{{ range $i, $network := $container.Networks }}{{ if eq $network.Name $container.Env.VIRTUAL_NETWORK }} {{ $network.IP }}:{{ $container.Env.VIRTUAL_PORT }}{{ end }}{{ end }}{{ end }} {
+    header_upstream Host {host}
+    header_upstream X-Real-IP {remote}
+    header_upstream X-Forwarded-For {remote}
+    header_upstream X-Forwarded-Proto {scheme}
+  }
+
+  log stdout
+}
+{{ end }}
