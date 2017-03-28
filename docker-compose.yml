@@ -44,7 +44,8 @@ services:
   caddy:
     container_name: caddy
     image: abiosoft/caddy
-    command: --conf /etc/caddy/config/Caddyfile --log stdout
+    # remove -ca=https://acme-staging.api.letsencrypt.org/directory in production
+    command: --conf /etc/caddy/config/Caddyfile --log stdout -ca=https://acme-staging.api.letsencrypt.org/directory
     ports:
       - 80:80
       - 443:443
