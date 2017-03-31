@@ -4,6 +4,7 @@
 
 :80
 log stdout
+errors stdout
 
 {{ else }}
 
@@ -21,6 +22,7 @@ log stdout
 
   gzip
   log stdout
+  errors stdout
 }
 {{ end }}
 
