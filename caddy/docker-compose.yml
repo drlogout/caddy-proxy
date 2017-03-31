@@ -15,8 +15,8 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - "../volumes/config:/etc/caddy/config"
-      - "../volumes/certs:/etc/caddy/certs"
+      - "../volumes/caddy/config:/etc/caddy/config"
+      - "../volumes/caddy/certs:/etc/caddy/certs"
     environment:
       - CADDYPATH=/etc/caddy/certs
     networks:
@@ -25,13 +25,14 @@ services:
 
   caddy-gen:
     container_name: caddy-gen
-    image: drlogout/docker-gen-dind:0.7.3
+    image: jwilder/docker-gen:0.7.3
     volumes:
       - "/var/run/docker.sock:/tmp/docker.sock:ro"
-      - "../volumes/templates:/etc/docker-gen/templates:ro"
+      - "../volumes/docker-gen/templates:/etc/docker-gen/templates:ro"
+      - "../volumes/docker-gen/config:/etc/docker-gen/config:ro"
     volumes_from:
       - caddy
     environment:
       LETSENCRYPT_EMAIL: "email@example.com"
-    command: -notify "docker restart caddy" -watch -wait 5s:30s /etc/docker-gen/templates/caddy.tmpl /etc/caddy/config/Caddyfile
+    command: -config /etc/docker-gen/config/docker-gen.cfg
     restart: always
