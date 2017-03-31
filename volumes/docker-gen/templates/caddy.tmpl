@@ -1,13 +1,14 @@
-{{ $containers := groupByMulti $ "Env.VIRTUAL_HOST" "," }}
+{{ $hosts := groupByMulti $ "Env.VIRTUAL_HOST" "," }}
 
-{{ if not $containers }}
+{{ if not $hosts }}
 
 :80
 log stdout
 
 {{ else }}
 
-{{ range $host, $containers }}
+{{ range $host, $containers := $hosts }}
+
 {{ $host }} {
   tls {{ $.Env.LETSENCRYPT_EMAIL }}
 
