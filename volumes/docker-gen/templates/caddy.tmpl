@@ -1,5 +1,13 @@
-{{ range $host, $containers := groupByMulti $ "Env.VIRTUAL_HOST" "," }}
+{{ $containers := groupByMulti $ "Env.VIRTUAL_HOST" "," }}
 
+{{ if not $containers }}
+
+:80
+log stdout
+
+{{ else }}
+
+{{ range $host, $containers }}
 {{ $host }} {
   tls {{ $.Env.LETSENCRYPT_EMAIL }}
 
@@ -10,6 +18,9 @@
     header_upstream X-Forwarded-Proto {scheme}
   }
 
+  gzip
   log stdout
 }
+{{ end }}
+
 {{ end }}
