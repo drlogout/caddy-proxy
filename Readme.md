@@ -32,7 +32,7 @@ networks:
 services:
   caddy:
     container_name: caddy
-    image: abiosoft/caddy:0.9.5
+    image: drlogout/caddy:0.9.5
     # remove -ca=https://acme-staging.api.letsencrypt.org/directory in production
     command: --conf /etc/caddy/config/Caddyfile --log stdout -ca=https://acme-staging.api.letsencrypt.org/directory
     ports:
