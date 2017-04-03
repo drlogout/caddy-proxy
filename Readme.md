@@ -43,7 +43,6 @@ services:
       - "../volumes/certs:/etc/caddy/certs"
     environment:
       - CADDYPATH=/etc/caddy/certs
-      - CADDYFILE=/etc/caddy/config/Caddyfile
     networks:
       - proxy-tier
     restart: always
