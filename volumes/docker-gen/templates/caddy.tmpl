@@ -1,17 +1,35 @@
-{{ $hosts := groupByMulti $ "Env.VIRTUAL_HOST" "," }}
+{{ define "timeouts" }}
+  {{ if gt (len .) 0 }}
+    {{ $first := index . 0 }}
+    {{ $parts := split $first "," }}
+    {{ if eq (len $parts) 1 }}
+  timeouts {{ index $parts 0 }}
+    {{ else }}
+  timeouts {
+        {{ range $index, $part := $parts }}
+    {{ trim $part }}
+        {{ end}}
+  }
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ $hosts := groupByMulti $ "Env.VIRTUAL_HOST" " " }}
 
 {{ if not $hosts }}
 
 :80
 log stdout
-errors stdout
+errors stderr
 
 {{ else }}
 
 {{ range $host, $containers := $hosts }}
+{{ $tlsEnv := closest (groupByKeys $containers "Env.CADDY_TLS") "off" }}
+{{ $tlsOff := eq $tlsEnv "off" }}
 
-{{ $host }} {
-  tls {{ $.Env.LETSENCRYPT_EMAIL }}
+{{ $addresses := split $host ","}}{{ range $address := $addresses }}{{ if $tlsOff }}http://{{end }}{{ $address }} {{ end }}{
+  tls {{ if $tlsOff }}off{{ else }}{{ $.Env.LETSENCRYPT_EMAIL }}{{ end }}
 
   proxy /{{ range $index, $container := $containers }}{{ range $i, $network := $container.Networks }}{{ if eq $network.Name $container.Env.VIRTUAL_NETWORK }} {{ $network.IP }}:{{ $container.Env.VIRTUAL_PORT }}{{ end }}{{ end }}{{ end }} {
     header_upstream Host {host}
@@ -21,8 +39,9 @@ errors stdout
   }
 
   gzip
+  {{ template "timeouts" groupByKeys $containers "Env.CADDY_TIMEOUTS" }}
   log stdout
-  errors stdout
+  errors stderr
 }
 {{ end }}
 

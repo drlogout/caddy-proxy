@@ -15,4 +15,6 @@ services:
       VIRTUAL_HOST: "app1.exmaple.com"
       VIRTUAL_NETWORK: "caddy-proxy"
       VIRTUAL_PORT: 80
+      CADDY_TLS: "off"
+      CADDY_TIMEOUTS: "read 5m, write 2m"
     restart: always
